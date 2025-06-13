@@ -24,7 +24,7 @@ class ApiError extends Error {
 };
 
 function createAPIService() {
-    const BASE_URL = 'http://localhost:3000';
+    const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
     async function request(endpoint, method='GET', data=null, includeCredentials=false) {
         const headers = {
@@ -64,10 +64,10 @@ function createAPIService() {
         login: (username, password) => request('/authen/login', 'POST', { username, password }, true),
         logout: () => request('/authen/logout', 'POST', null, true),
         verify: () =>request('/authen/verify', 'GET', null, true),
-        getPostsMetaData: (searchParams) => request(`/posts${searchParams ? `?${searchParams.toString()}` : ''}`, 'GET', null, true),
-        getPost: (postId) => request(`/posts/${postId}`, 'GET', null, true),
-        getComments: (searchParams) => request(`/comments${searchParams ? `?${searchParams.toString()}` : ''}`, 'GET', null, false),
-        addComment: (postId, content) => request(`/posts/${postId}/comments`, 'POST', { content }, true)
+        getPostsMetaData: (searchParams) => request(`/posts${searchParams ? `?${searchParams.toString()}` : ''}`, 'GET', null),
+        getPost: (postId) => request(`/posts/${postId}`, 'GET', null),
+        getComments: (postId, searchParams) => request(`/posts/${postId}/comments${searchParams ? `?${searchParams.toString()}` : ''}`, 'GET', null),
+        addComment: (postId, content) => request(`/users/posts/${postId}/comments`, 'POST', { content }, true)
     };
 };
 
