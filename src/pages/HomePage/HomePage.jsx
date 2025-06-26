@@ -3,7 +3,7 @@ import usePostsMetaData from '../../hook/usePostsMetaData.jsx';
 import { PostCard, PostCardSkeleton } from '../../components/PostCard';
 import Hero from '../../components/Hero/Hero.jsx';
 import Swiper from '../../components/Swiper/Swiper.jsx';
-import{ UnexpectedError, NotFoundError } from '../../components/Error';
+import{ UnexpectedError, ErrorMessage } from '../../components/Error';
 import styles from './HomePage.module.css';
 
 const DEFAULT_SEARCH_PARAMS = new URLSearchParams({ page: 1, pageSize: 7, orderBy: 'createdAt', orderDir: 'desc' })
@@ -59,13 +59,16 @@ function HomePage(props) {
                                             month: 'long',
                                             day: 'numeric'
                                         })}
-                                        imgSrc='/fff.jpg'
+                                        imgSrc={post.thumbnailURL ? post.thumbnailURL : '/fff.jpg'}
                                     />
                                 ))}
                                 buttonDisabled={false}
                             />
                         ) : (
-                            <NotFoundError/>
+                            <ErrorMessage 
+                                message='No post found'
+                                variant='info'
+                            />
                         )
                     )}
                 </section>

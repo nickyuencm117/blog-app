@@ -7,12 +7,14 @@ import { PostCard, PostCardSkeleton } from '../../components/PostCard';
 import Hero from '../../components/Hero/Hero.jsx';
 import Pagination from '../../components/Pagination/Pagination.jsx';
 import SearchToolbar from '../../components/SearchToolBar/SearchToolBar.jsx';
-import { UnexpectedError, NotFoundError } from '../../components/Error';
+import { UnexpectedError, ErrorMessage } from '../../components/Error';
 
 import styles from './PostListPage.module.css';
 
+const PAGE_SIZE = 9;
+
 function PostListPage(props) {
-    const [searchParams, setSearchParams] = useSearchParams({ page: 1, orderBy: 'createdAt', orderDir: 'desc' });
+    const [searchParams, setSearchParams] = useSearchParams({ page: 1, pageSize: PAGE_SIZE, orderBy: 'createdAt', orderDir: 'desc' });
     const { posts, error, total, loading } = usePostsMetaData(searchParams);
 
     const sortingOptions = useMemo(() => ([
@@ -20,14 +22,14 @@ function PostListPage(props) {
         { value: 'createdAt:asc', label: 'Date of Creation (Asc)' },
         { value: 'title:desc', label: 'Title (Desc)' },
         { value: 'title:asc', label: 'Title (Asc)' }
-    ]));
+    ]), []);
 
-    const handleSearchParamsChange = useCallback((updates) => {
+    const handleSearchParamsChange = (updates) => {
         setSearchParams((prev) => {
             const newSearchParams = updateSearchParams(prev, { ...updates });
             return newSearchParams;
         })
-    }, []);
+    };
 
     function handlePageChange(page) {
         handleSearchParamsChange({ page })
@@ -94,19 +96,22 @@ function PostListPage(props) {
                                                 month: 'long',
                                                 day: 'numeric'
                                             })}
-                                            imgSrc='/fff.jpg'
+                                            imgSrc={post.thumbnailURL ? post.thumbnailURL : '/fff.jpg'}
                                         />
                                     ))}                           
                                 </div>
                                 <Pagination
                                     currentPage={Number(searchParams.get('page')) || 1}
-                                    totalPages={Math.ceil(total / 9)}
+                                    totalPages={Math.ceil(total / PAGE_SIZE)}
                                     maxVisiblePageBtn={5}
                                     onPageChange={handlePageChange}
                                 />
                             </>   
                         ) : (
-                            <NotFoundError/>
+                            <ErrorMessage 
+                                message='No post found'
+                                variant='info'
+                            />
                         )
                     )}                    
                 </section>

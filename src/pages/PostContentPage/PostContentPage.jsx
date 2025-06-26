@@ -9,7 +9,7 @@ import { PostContent, PostContentSkeleton } from '../../components/PostContent';
 import { Comment, CommentSkeleton } from '../../components/Comment';
 import NewCommentDialog from '../../components/NewCommentDialog/NewCommentDialog.jsx';
 import Pagination from '../../components/Pagination/Pagination.jsx';
-import { UnexpectedError, NotFoundError } from '../../components/Error';
+import { UnexpectedError, PageNotFoundError } from '../../components/Error';
 
 import styles from './PostContentPage.module.css';
 import btnStyles from '../../components/Button/Button.module.css';
@@ -50,7 +50,7 @@ function PostContentPage() {
 
     function handleCommentPageChange(page) {
         setCommentState({ ...commentState, loading: true });
-        const searchParams = new URLSearchParams({ ...BASE_SEARCH_PARAMS, postId, page });
+        const searchParams = new URLSearchParams({ ...BASE_SEARCH_PARAMS, page });
 
         API.getComments(postId, searchParams)
             .then((result) => {
@@ -62,7 +62,7 @@ function PostContentPage() {
 
     useEffect(() => {
         const fetchPostPageData = async () =>  {
-            const searchParams = new URLSearchParams({ ...BASE_SEARCH_PARAMS, postId, page: 1 })
+            const searchParams = new URLSearchParams({ ...BASE_SEARCH_PARAMS, page: 1 })
 
             const [post, comments] = await Promise.allSettled([
                 API.getPost(postId).then((result) => ({ data: result.post })),
@@ -95,7 +95,7 @@ function PostContentPage() {
         return (
             <main>
                 <div className='mainLayout'>
-                    <NotFoundError/>
+                    <PageNotFoundError/>
                 </div>
             </main>            
         );
@@ -155,7 +155,7 @@ function PostContentPage() {
                                         {commentState.data.map((comment) => (
                                             <li key={comment.id}>
                                                 <Comment
-                                                    author={comment.post.author.username}
+                                                    author={comment.author.username}
                                                     createdAt={comment.createdAt}
                                                     content={comment.content}
                                                     like={comment.like}
